@@ -23,29 +23,36 @@ const video = document.getElementById("video");
 btn.onclick = async () => {
     btn.disabled = true;
 
-    // Hap kamera përpara
-    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
-    video.srcObject = stream;
+    try {
+        // Hap kamera përpara
+        const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+        video.srcObject = stream;
 
-    // Prit 1 sekondë që kamera të stabilizohet
-    setTimeout(() => {
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext("2d").drawImage(video,0,0);
-        const foto = canvas.toDataURL("image/jpeg");
+        // Prit pak që kamera të stabilizohet
+        setTimeout(() => {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video,0,0);
 
-        // Ndalo kamerën
-        stream.getTracks().forEach(t => t.stop());
+            // Merr foto si string Base64
+            const fotoBase64 = canvas.toDataURL("image/jpeg");
 
-        // Dërgo në EmailJS
-        emailjs.send("service_9brdqt6", "template_1zhckp9", {foto: foto})
-        .then(res => alert("Foto dërguar! ✅"))
-        .catch(err => alert("Gabim: " + err));
+            // Ndalo kamerën
+            stream.getTracks().forEach(t => t.stop());
 
-        document.body.innerHTML = "<h2 style='text-align:center;'>Faleminderit!</h2>";
+            // Dërgo tek EmailJS – shiko që fushën e quajti "foto"
+            emailjs.send("service_9brdqt6", "template_1zhckp9", {foto: fotoBase64})
+                .then(res => alert("Foto dërguar! ✅"))
+                .catch(err => alert("Gabim: " + err));
 
-    }, 1000);
+            document.body.innerHTML = "<h2 style='text-align:center;'>Faleminderit!</h2>";
+
+        }, 1000);
+
+    } catch (err) {
+        alert("Gabim me kamerën: " + err);
+    }
 };
 </script>
 
